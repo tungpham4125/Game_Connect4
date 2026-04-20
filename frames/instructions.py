@@ -1,49 +1,52 @@
 """
 =============================================================
-frames/instructions.py - Modal Hướng Dẫn Chơi (Đơn giản)
+frames/instructions.py - Modal Hướng Dẫn Chơi (CTk style)
 =============================================================
-Toplevel modal có thể kéo được (drag header để di chuyển).
-Nút "ĐÃ HIỂU" là tk.Button thông thường — dễ chỉnh sửa.
+Toplevel modal kéo được (drag header).
+Dùng CTkButton cho nút ĐÃ HIỂU.
 
 ĐỂ CHỈNH SỬA:
-  - Màu sắc : thay đổi các hằng số BG, BORDER, v.v. bên dưới
-  - Kích thước: thay đổi W, H
+  - Màu sắc: sửa các hằng số BG, BORDER, BTN_BG...
+  - Kích thước: sửa W, H
 =============================================================
 """
 
 import tkinter as tk
+import customtkinter as ctk
 
 
 class InstructionsModal(tk.Toplevel):
     """
-    Hộp thoại Hướng dẫn chơi.
-    Kéo bằng cách giữ chuột vào phần header tiêu đề.
-    Nhấn ✕ hoặc "ĐÃ HIỂU" để đóng.
+    Hộp thoại Hướng dẫn chơi - Arcade dark theme.
+    Kéo bằng cách giữ chuột vào header.
     """
 
-    # ── Màu sắc (Chỉnh sửa tại đây) ──────────────────────────
-    BG        = "#1E1E3F"    # Nền chính
-    BORDER    = "#EAB308"    # Viền vàng
-    HDR_BG    = "#0D0D1A"    # Nền header
-    TITLE_CLR = "#FACC15"    # Màu tiêu đề
-    TEXT_CLR  = "#E5E7EB"    # Màu văn bản
-    CLOSE_CLR = "#9CA3AF"    # Màu nút ✕ (bình thường)
-    TIP_BG    = "#2A2200"    # Nền hộp mẹo
-    TIP_BD    = "#A16207"    # Viền hộp mẹo
-    TIP_TEXT  = "#FEF08A"    # Chữ trong hộp mẹo
-    FOOTER_BG = "#0A0A16"    # Nền footer
-    BTN_BG    = "#0284C7"    # Màu nút ĐÃ HIỂU
-    BTN_HOV   = "#075985"    # Màu nút khi hover
+    # ── Màu sắc ───────────────────────────────────────────────
+    BG        = "#1a1a2e"    # Màu nền (khớp với menu)
+    CARD_BG   = "#16213e"    # Màu nền card (hơi sáng hơn)
+    BORDER    = "#f9a825"    # Viền vàng gold
+    HDR_BG    = "#0f0f2d"    # Nền header
+    TITLE_CLR = "#f9a825"    # Màu tiêu đề vàng
+    TEXT_CLR  = "#d0d0e8"    # Màu văn bản chính
+    CLOSE_CLR = "#888899"    # Màu nút ✕ bình thường
+    TIP_BG    = "#251e00"    # Nền hộp mẹo
+    TIP_BD    = "#7a5c00"    # Viền hộp mẹo
+    TIP_TEXT  = "#ffe082"    # Chữ trong hộp mẹo
+    FOOTER_BG = "#0d0d20"    # Nền footer
+    BTN_BG    = "#2196F3"    # Màu nút ĐÃ HIỂU (xanh sáng)
+    BTN_HOV   = "#1565C0"    # Màu nút khi hover
 
-    # Màu vòng tròn số thứ tự bước
-    NUM_BG = ["#EF4444", "#374151", "#374151", "#22C55E"]
+    # Màu số thứ tự bước
+    NUM_BG  = ["#e53935", "#37474f", "#37474f", "#43a047"]
 
-    # ── Kích thước (Chỉnh sửa tại đây) ───────────────────────
-    W, H = 460, 530
+    # ── Kích thước ────────────────────────────────────────────
+    W, H = 480, 540
+
+    # ──────────────────────────────────────────────────────────
 
     def __init__(self, parent):
         super().__init__(parent)
-        self.overrideredirect(True)   # Ẩn thanh tiêu đề Windows
+        self.overrideredirect(True)
         self.configure(bg=self.BORDER)
         self.resizable(False, False)
         self._dx = self._dy = 0
@@ -58,7 +61,6 @@ class InstructionsModal(tk.Toplevel):
     # ──────────────────────────────────────────────────────────
 
     def _center(self):
-        """Đặt modal ở giữa màn hình."""
         sw = self.winfo_screenwidth()
         sh = self.winfo_screenheight()
         self.geometry(
@@ -77,10 +79,12 @@ class InstructionsModal(tk.Toplevel):
     # ──────────────────────────────────────────────────────────
 
     def _build(self):
+        # Outer border frame (viền vàng)
         outer = tk.Frame(self, bg=self.BORDER, padx=2, pady=2)
         outer.pack(fill=tk.BOTH, expand=True)
 
-        inner = tk.Frame(outer, bg=self.BG)
+        # Inner card
+        inner = tk.Frame(outer, bg=self.CARD_BG)
         inner.pack(fill=tk.BOTH, expand=True)
 
         self._build_header(inner)
@@ -93,16 +97,18 @@ class InstructionsModal(tk.Toplevel):
     # ──────────────────────────────────────────────────────────
 
     def _build_header(self, parent):
-        hdr = tk.Frame(parent, bg=self.HDR_BG, pady=12)
+        hdr = tk.Frame(parent, bg=self.HDR_BG, pady=14)
         hdr.pack(fill=tk.X)
         hdr.bind("<ButtonPress-1>", self._drag_start)
         hdr.bind("<B1-Motion>",     self._drag_do)
 
+        # Icon ℹ
         tk.Label(
-            hdr, text=" ℹ ", bg=self.TITLE_CLR, fg=self.BG,
+            hdr, text=" ⓘ ", bg=self.TITLE_CLR, fg=self.HDR_BG,
             font=("Arial", 12, "bold")
-        ).pack(side=tk.LEFT, padx=(14, 8))
+        ).pack(side=tk.LEFT, padx=(14, 10))
 
+        # Tiêu đề
         tk.Label(
             hdr, text="HƯỚNG DẪN CHƠI",
             bg=self.HDR_BG, fg=self.TITLE_CLR,
@@ -111,7 +117,7 @@ class InstructionsModal(tk.Toplevel):
 
         # Nút đóng ✕
         xl = tk.Label(
-            hdr, text=" ✕ ",
+            hdr, text="  ✕  ",
             bg=self.HDR_BG, fg=self.CLOSE_CLR,
             font=("Arial", 14, "bold"), cursor="hand2"
         )
@@ -125,21 +131,22 @@ class InstructionsModal(tk.Toplevel):
     # ──────────────────────────────────────────────────────────
 
     def _build_content(self, parent):
-        content = tk.Frame(parent, bg=self.BG, padx=16, pady=10)
+        content = tk.Frame(parent, bg=self.CARD_BG, padx=18, pady=12)
         content.pack(fill=tk.BOTH, expand=True)
 
         steps = [
             (
                 "Bạn sẽ cầm xu ",
-                [("Đỏ", "#F87171"), (", Máy (AI) cầm xu ", self.TEXT_CLR),
-                 ("Vàng", "#FACC15"), (".", self.TEXT_CLR)]
+                [("Đỏ", "#F87171", True),
+                 (", Máy (AI) cầm xu ", self.TEXT_CLR, False),
+                 ("Vàng", "#FACC15", True), (".", self.TEXT_CLR, False)]
             ),
             ("Mỗi lượt, click vào một cột trên bàn cờ để thả xu.", []),
             ("Xu tự động rơi xuống vị trí thấp nhất còn trống.", []),
             (
                 "Người đầu tiên xếp được ",
-                [("4 xu liên tiếp", "#4ADE80"),
-                 (" (ngang, dọc, chéo) sẽ chiến thắng!", self.TEXT_CLR)]
+                [("4 xu liên tiếp", "#4ADE80", True),
+                 (" (ngang, dọc, chéo) sẽ chiến thắng!", self.TEXT_CLR, False)]
             ),
         ]
 
@@ -147,19 +154,17 @@ class InstructionsModal(tk.Toplevel):
             self._add_step(content, idx + 1, base, extras)
 
         # ── Hộp mẹo ───────────────────────────────────────────
-        border_box = tk.Frame(content, bg=self.TIP_BD, padx=1, pady=1)
-        border_box.pack(fill=tk.X, pady=(10, 0))
+        bd_box = tk.Frame(content, bg=self.TIP_BD, padx=1, pady=1)
+        bd_box.pack(fill=tk.X, pady=(12, 0))
 
-        tip_inner = tk.Frame(border_box, bg=self.TIP_BG, padx=12, pady=10)
-        tip_inner.pack(fill=tk.BOTH)
+        tip = tk.Frame(bd_box, bg=self.TIP_BG, padx=14, pady=12)
+        tip.pack(fill=tk.BOTH)
 
-        row = tk.Frame(tip_inner, bg=self.TIP_BG)
+        row = tk.Frame(tip, bg=self.TIP_BG)
         row.pack(fill=tk.X)
 
-        tk.Label(
-            row, text="💡", bg=self.TIP_BG,
-            font=("Arial", 15)
-        ).pack(side=tk.LEFT, padx=(0, 8), anchor=tk.N)
+        tk.Label(row, text="💡", bg=self.TIP_BG,
+                 font=("Arial", 16)).pack(side=tk.LEFT, padx=(0, 10), anchor=tk.N)
 
         tk.Label(
             row,
@@ -171,64 +176,61 @@ class InstructionsModal(tk.Toplevel):
         ).pack(side=tk.LEFT, expand=True)
 
     def _add_step(self, parent, num: int, base: str, extras: list):
-        """Thêm một bước hướng dẫn với số thứ tự và văn bản inline."""
-        row = tk.Frame(parent, bg=self.BG, pady=5)
+        """Thêm một bước hướng dẫn có số thứ tự trong vòng tròn."""
+        row = tk.Frame(parent, bg=self.CARD_BG, pady=6)
         row.pack(fill=tk.X)
 
         # Vòng tròn số
-        c = tk.Canvas(row, width=30, height=30,
-                      bg=self.BG, highlightthickness=0)
-        c.pack(side=tk.LEFT, padx=(0, 10), anchor=tk.N, pady=2)
-        c.create_oval(1, 1, 29, 29,
-                      fill=self.NUM_BG[num - 1], outline="", width=0)
-        c.create_text(15, 15, text=str(num),
-                      font=("Arial", 11, "bold"), fill="white")
+        c = tk.Canvas(row, width=32, height=32,
+                      bg=self.CARD_BG, highlightthickness=0)
+        c.pack(side=tk.LEFT, padx=(0, 12), anchor=tk.N, pady=2)
+        c.create_oval(1, 1, 31, 31, fill=self.NUM_BG[num - 1], outline="", width=0)
+        c.create_text(16, 16, text=str(num),
+                      font=("Arial", 12, "bold"), fill="white")
 
-        # Văn bản inline
-        line = tk.Frame(row, bg=self.BG)
+        # Văn bản
+        line = tk.Frame(row, bg=self.CARD_BG)
         line.pack(side=tk.LEFT, fill=tk.X, expand=True, pady=2)
 
         def lbl(text, fg=None, bold=False):
             if not text:
                 return
             tk.Label(
-                line, text=text, bg=self.BG,
+                line, text=text, bg=self.CARD_BG,
                 fg=fg or self.TEXT_CLR,
                 font=("Arial", 10, "bold" if bold else "normal"),
                 wraplength=0
             ).pack(side=tk.LEFT)
 
         lbl(base)
-        for txt, clr in extras:
-            lbl(txt, fg=clr, bold=(clr != self.TEXT_CLR))
+        for item in extras:
+            txt, clr, is_bold = (item if len(item) == 3
+                                 else (item[0], item[1], False))
+            lbl(txt, fg=clr, bold=is_bold)
 
     # ──────────────────────────────────────────────────────────
-    #  FOOTER — Nút ĐÃ HIỂU
+    #  FOOTER — Nút ĐÃ HIỂU (CTkButton)
     # ──────────────────────────────────────────────────────────
 
     def _build_footer(self, parent):
-        footer = tk.Frame(parent, bg=self.FOOTER_BG, pady=14)
+        footer = tk.Frame(parent, bg=self.FOOTER_BG, pady=16)
         footer.pack(fill=tk.X)
 
-        btn = tk.Button(
+        ctk.CTkButton(
             footer,
             text="ĐÃ HIỂU",
             command=self._close,
-            bg=self.BTN_BG,
-            fg="white",
+            width=190,
+            height=46,
+            fg_color=self.BTN_BG,
+            hover_color=self.BTN_HOV,
+            text_color="white",
             font=("Arial", 13, "bold"),
-            width=16,
-            pady=7,
-            relief=tk.FLAT,
-            cursor="hand2",
-            activebackground=self.BTN_HOV,
-            activeforeground="white",
-            bd=0,
-        )
-        btn.pack()
+            corner_radius=25,
+            border_width=0,
+            bg_color=self.FOOTER_BG,
+        ).pack()
 
-    # ──────────────────────────────────────────────────────────
-    #  ĐÓNG MODAL
     # ──────────────────────────────────────────────────────────
 
     def _close(self):
